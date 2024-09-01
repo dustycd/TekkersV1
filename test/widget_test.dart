@@ -1,30 +1,129 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:provider/provider.dart';
 import 'package:tekkers/main.dart';
+import 'package:tekkers/screens/home_screen.dart';
+import 'package:tekkers/providers/team_provider.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('App renders HomeScreen with BottomNavigationBar', (WidgetTester tester) async {
+    // Arrange
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => TeamProvider()),
+        ],
+        child: MaterialApp(
+          home: HomeScreen(),
+        ),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Act
+    await tester.pumpAndSettle();
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    // Assert
+    expect(find.byType(HomeScreen), findsOneWidget);
+    expect(find.byType(BottomNavigationBar), findsOneWidget);
+    expect(find.text('Home'), findsOneWidget);
+    expect(find.text('Calendar'), findsOneWidget);
+    expect(find.text('News'), findsOneWidget);
+    expect(find.text('Transfers'), findsOneWidget);
+    expect(find.text('Settings'), findsOneWidget);
+  });
+
+  testWidgets('Tapping on BottomNavigationBar switches screens', (WidgetTester tester) async {
+    // Arrange
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => TeamProvider()),
+        ],
+        child: MaterialApp(
+          home: HomeScreen(),
+        ),
+      ),
+    );
+
+    // Act
+    await tester.tap(find.text('Calendar'));
+    await tester.pumpAndSettle();
+
+    // Assert
+    expect(find.text('Calendar Screen'), findsOneWidget);
+
+    // Act
+    await tester.tap(find.text('News'));
+    await tester.pumpAndSettle();
+
+    // Assert
+    expect(find.text('News Screen'), findsOneWidget);
+
+    // Act
+    await tester.tap(find.text('Transfers'));
+    await tester.pumpAndSettle();
+
+    // Assert
+    expect(find.text('Transfers Screen'), findsOneWidget);
+
+    // Act
+    await tester.tap(find.text('Settings'));
+    await tester.pumpAndSettle();
+
+    // Assert
+    expect(find.text('Settings Screen'), findsOneWidget);
+
+    // Act
+    await tester.tap(find.text('Home'));
+    await tester.pumpAndSettle();
+
+    // Assert
+    expect(find.byType(HomeScreen), findsOneWidget);
+  });
+
+  testWidgets('HomeScreen displays a list of teams when loaded', (WidgetTester tester) async {
+    // Arrange
+    final teamProvider = TeamProvider();
+    await teamProvider.loadTeams();
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => teamProvider),
+        ],
+        child: MaterialApp(
+          home: HomeScreen(),
+        ),
+      ),
+    );
+
+    // Act
+    await tester.pumpAndSettle();
+
+    // Assert
+    expect(find.byType(ListTile), findsWidgets);
+  });
+
+  testWidgets('HomeScreen shows loading indicator while fetching data', (WidgetTester tester) async {
+    // Arrange
+    final teamProvider = TeamProvider();
+    teamProvider.loadTeams();
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => teamProvider),
+        ],
+        child: MaterialApp(
+          home: HomeScreen(),
+        ),
+      ),
+    );
+
+    // Act
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Assert
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 }
