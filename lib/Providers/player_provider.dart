@@ -1,43 +1,38 @@
 import 'package:flutter/material.dart';
-import '../models/player.dart';
-import '../services/api_service.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class PlayerProvider with ChangeNotifier {
-  List<Player> _allPlayers = [];
-  List<Player> _followedPlayers = [];
-  bool _isLoading = false;
+  List<dynamic> _players = [];
+  final List<dynamic> _followedPlayers = [];
 
-  List<Player> get allPlayers => _allPlayers;
-  List<Player> get followedPlayers => _followedPlayers;
-  bool get isLoading => _isLoading;
+  List<dynamic> get players => _players;
+  List<dynamic> get followedPlayers => _followedPlayers;
 
-  // Method to load all players from the API
-  Future<void> loadAllPlayers() async {
-    _isLoading = true;
-    notifyListeners();
+  PlayerProvider() {
+    fetchPlayers(); // Fetch the players when the provider is initialized
+  }
 
+  Future<void> fetchPlayers() async {
     try {
-      _allPlayers = await ApiService().fetchPlayers(); // Fetch all players from API
+      final response = await http.get(
+        Uri.parse('https://api.football-data.org/v4/players'), // Replace with correct endpoint
+        headers: {
+          'X-Auth-Token': 'b373e81675174781839c2a00b33385b0', // Your API key
+        },
+      );
+      if (response.statusCode == 200) {
+        _players = jsonDecode(response.body);
+        notifyListeners();
+      } else {
+        throw Exception('Failed to load players');
+      }
     } catch (error) {
-      print('Error loading all players: $error'); // Error handling
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+      print('Error fetching players: $error');
     }
   }
 
-  // Method to load followed players from the API
   Future<void> loadFollowedPlayers() async {
-    _isLoading = true;
-    notifyListeners();
-
-    try {
-      _followedPlayers = await ApiService().fetchFollowedPlayers(); // Fetch followed players from API
-    } catch (error) {
-      print('Error loading followed players: $error'); // Error handling
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
+    // Logic for loading followed players can be added here
   }
 }

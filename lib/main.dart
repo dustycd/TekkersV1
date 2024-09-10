@@ -1,57 +1,68 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tekkers/Providers/competition_provider.dart';
+import 'package:tekkers/Providers/theme_manager.dart';
+import 'package:tekkers/screens/splash_screen.dart'; // Import the SplashScreen
 import 'providers/team_provider.dart';
 import 'providers/match_provider.dart';
-import 'screens/home_screen.dart';
-import 'screens/calendar_screen.dart';
-import 'screens/news_screen.dart';
-import 'screens/transfers_screen.dart';
-import 'screens/settings_screen.dart';
-import 'screens/search_screen.dart';
-import 'screens/home_page.dart';
+import 'providers/player_provider.dart';
+import 'providers/news_provider.dart';
+import 'providers/transfer_provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => TransferProvider()),
+        ChangeNotifierProvider(create: (_) => CompetitionProvider()),
+        ChangeNotifierProvider(create: (_) => TeamProvider()),
+        ChangeNotifierProvider(create: (_) => MatchProvider()),
+        ChangeNotifierProvider(create: (_) => PlayerProvider()),
+        ChangeNotifierProvider(create: (_) => NewsProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeManager()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => TeamProvider()),
-        ChangeNotifierProvider(create: (_) => MatchProvider()), // Adding MatchProvider
-      ],
-      child: MaterialApp(
-        title: 'Tekkers',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          brightness: Brightness.dark,
-          scaffoldBackgroundColor: Color(0xFF121212), // Mimics the dark theme in the screenshots
-          appBarTheme: AppBarTheme(
-            backgroundColor: Color(0xFF1F1F1F),
-            titleTextStyle: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+    return MaterialApp(
+      title: 'Tekkers',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const SplashScreen(), // Set SplashScreen as the initial screen
+    );
+  }
+}
+
+class BackgroundWrapper extends StatelessWidget {
+  final Widget child;
+
+  const BackgroundWrapper({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          // Background image
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/field.png"), // Ensure this path is correct
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-          bottomNavigationBarTheme: BottomNavigationBarThemeData(
-            backgroundColor: Color(0xFF1F1F1F),
-            selectedItemColor: Colors.amber[800],
-            unselectedItemColor: Colors.grey,
-            showUnselectedLabels: true,
-          ),
-        ),
-        home: HomeScreen(),
-        routes: {
-          '/calendar': (context) => CalendarScreen(),
-          '/news': (context) => NewsScreen(),
-          '/transfers': (context) => TransfersScreen(),
-          '/settings': (context) => SettingsScreen(),
-          '/search': (context) => SearchScreen(),
-          // Other routes can be added here if necessary
-        },
+          // Child widget
+          child,
+        ],
       ),
     );
   }

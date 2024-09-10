@@ -1,40 +1,55 @@
 import 'package:flutter/material.dart';
-import '../models/team.dart';
-import '../services/api_service.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+import 'package:tekkers/models/team.dart';
 
 class TeamProvider with ChangeNotifier {
-  List<Team> _allTeams = [];
-  List<Team> _followedTeams = [];
+  List<Team> _teams = [];  // List of teams using the Team model
   bool _isLoading = false;
+  String? _errorMessage;
 
-  List<Team> get allTeams => _allTeams;
-  List<Team> get followedTeams => _followedTeams;
+  List<Team> get teams => _teams;  // Return a list of Team objects
   bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
 
-  // Method to load all teams from the API
-  Future<void> loadAllTeams() async {
-    _isLoading = true;
-    notifyListeners();
-
+  // Get a team by its ID
+  Team? getTeamById(int id) {
     try {
-      _allTeams = await ApiService().fetchTeams(); // Fetch all teams from API
-    } catch (error) {
-      print('Error loading all teams: $error'); // Error handling
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+      return _teams.firstWhere((team) => team.id == id);
+    } catch (e) {
+      return null;  // Return null if no team is found
     }
   }
 
-  // Method to load followed teams from the API
-  Future<void> loadFollowedTeams() async {
+  // Constructor to automatically fetch teams
+  TeamProvider() {
+    fetchTeams();  // Automatically load teams when the provider is initialized
+  }
+
+  // Fetch teams from an API
+  Future<void> fetchTeams() async {
     _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
     try {
-      _followedTeams = await ApiService().fetchFollowedTeams(); // Fetch followed teams from API
+      final response = await http.get(
+        Uri.parse('https://api.football-data.org/v4/teams'),  // Correct API endpoint
+        headers: {
+          'X-Auth-Token': 'b373e81675174781839c2a00b33385b0',  // Your API key
+        },
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response.body)['teams'];
+        _teams = data.map((teamJson) => Team.fromJson(teamJson)).toList();  // Map API data to Team model
+      } else {
+        throw Exception('Failed to load teams');
+      }
     } catch (error) {
-      print('Error loading followed teams: $error'); // Error handling
+      _errorMessage = 'Error loading teams: $error';
+      print(_errorMessage);
     } finally {
       _isLoading = false;
       notifyListeners();
