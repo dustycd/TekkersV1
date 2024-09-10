@@ -1,30 +1,143 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:tekkers/main.dart';
+import 'package:provider/provider.dart';
+import 'package:tekkers/screens/home_screen.dart';
+import 'package:tekkers/providers/team_provider.dart';
+import 'package:tekkers/screens/news_screen.dart'; 
+import 'package:tekkers/screens/settings_screen.dart'; 
+import 'package:tekkers/screens/transfers_screen.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  // Helper function to wrap the widget under test with the required providers.
+  Widget createTestableWidget(Widget widget) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => TeamProvider()),
+        // Add providers if needed
+      ],
+      child: MaterialApp(
+        home: widget,
+      ),
+    );
+  }
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  testWidgets('App renders HomeScreen with BottomNavigationBar', (WidgetTester tester) async {
+    // Arrange
+    await tester.pumpWidget(createTestableWidget(HomeScreen()));
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    // Act
+    await tester.pumpAndSettle();
+
+    // Assert
+    expect(find.byType(HomeScreen), findsOneWidget);
+    expect(find.byType(BottomNavigationBar), findsOneWidget);
+    expect(find.text('Home'), findsOneWidget);
+    expect(find.text('News'), findsOneWidget);
+    expect(find.text('Transfers'), findsOneWidget);
+    expect(find.text('Settings'), findsOneWidget);
+  });
+
+  testWidgets('Tapping on BottomNavigationBar switches screens', (WidgetTester tester) async {
+    // Arrange
+    await tester.pumpWidget(createTestableWidget(HomeScreen()));
+
+    // Act & Assert
+    await tester.tap(find.text('News'));
+    await tester.pumpAndSettle();
+    expect(find.byType(NewsScreen), findsOneWidget); // Check for NewsScreen
+
+    await tester.tap(find.text('Transfers'));
+    await tester.pumpAndSettle();
+    expect(find.byType(TransferScreen), findsOneWidget); // Check for TransfersScreen
+
+    await tester.tap(find.text('Settings'));
+    await tester.pumpAndSettle();
+    expect(find.byType(SettingsScreen), findsOneWidget); // Check for SettingsScreen
+
+    await tester.tap(find.text('Home'));
+    await tester.pumpAndSettle();
+    expect(find.byType(HomeScreen), findsOneWidget);
+  });
+
+  testWidgets('NewsScreen shows loading indicator while fetching news', (WidgetTester tester) async {
+    // Arrange
+    await tester.pumpWidget(createTestableWidget(NewsScreen()));
+
+    // Act
+    await tester.pump(); // Let the loading state be active for a moment
+
+    // Assert
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+  });
+
+  testWidgets('NewsScreen displays list of news articles after loading', (WidgetTester tester) async {
+    // Arrange
+    await tester.pumpWidget(createTestableWidget(NewsScreen()));
+
+    // Act
+    await tester.pumpAndSettle(); // Wait for the loading and news data
+
+    // Assert
+    expect(find.byType(ListTile), findsWidgets); // Assuming ListTile represents a news article
+  });
+
+  testWidgets('NewsScreen search functionality works', (WidgetTester tester) async {
+    // Arrange
+    await tester.pumpWidget(createTestableWidget(NewsScreen()));
+
+    // Act
+    await tester.enterText(find.byType(TextField), 'Premier League');
+    await tester.tap(find.byIcon(Icons.search));
+    await tester.pumpAndSettle(); // Wait for the search results to load
+
+    // Assert
+    expect(find.textContaining('Premier League'), findsWidgets); // Verifying search results contain 'Premier League'
+  });
+
+  testWidgets('HomeScreen displays a list of teams when loaded', (WidgetTester tester) async {
+    // Arrange
+    final teamProvider = TeamProvider();
+    // Mock or load data here, assuming fetchTeams is the correct method
+    await teamProvider.fetchTeams(); // Mocking team loading
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => teamProvider),
+        ],
+        child: MaterialApp(
+          home: HomeScreen(),
+        ),
+      ),
+    );
+
+    // Act
+    await tester.pumpAndSettle();
+
+    // Assert
+    expect(find.byType(ListTile), findsWidgets);
+  });
+
+  testWidgets('HomeScreen shows loading indicator while fetching data', (WidgetTester tester) async {
+    // Arrange
+    final teamProvider = TeamProvider();
+    teamProvider.fetchTeams(); // Ensure this triggers a loading state
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => teamProvider),
+        ],
+        child: MaterialApp(
+          home: HomeScreen(),
+        ),
+      ),
+    );
+
+    // Act
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Assert
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 }
