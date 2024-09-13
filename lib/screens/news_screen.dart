@@ -14,7 +14,7 @@ class _NewsScreenState extends State<NewsScreen> {
   List<dynamic> _newsArticles = [];
   bool _isLoading = true;
   bool _hasError = false;
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -96,7 +96,7 @@ class _NewsScreenState extends State<NewsScreen> {
         title: const Text('News', style: TextStyle(fontSize: 20, color: Colors.black)),
         actions: [
           IconButton(
-            icon: Icon(Icons.search, color: Colors.white),
+            icon: const Icon(Icons.search, color: Colors.white),
             onPressed: () {
               showSearch(context: context, delegate: NewsSearch(_newsArticles, _fetchNews));
             },
@@ -214,7 +214,7 @@ class NewsSearch extends SearchDelegate {
   List<Widget>? buildActions(BuildContext context) {
     return [
       IconButton(
-        icon: Icon(Icons.clear),
+        icon: const Icon(Icons.clear),
         onPressed: () {
           query = '';
         },
@@ -225,7 +225,7 @@ class NewsSearch extends SearchDelegate {
   @override
   Widget? buildLeading(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.arrow_back),
+      icon: const Icon(Icons.arrow_back),
       onPressed: () {
         close(context, null);
       },

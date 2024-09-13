@@ -5,7 +5,7 @@ import 'package:tekkers/providers/team_provider.dart';
 class TeamProfileScreen extends StatelessWidget {
   final int teamId;
 
-  TeamProfileScreen({required this.teamId});
+  const TeamProfileScreen({super.key, required this.teamId});
 
   @override
   Widget build(BuildContext context) {
@@ -14,8 +14,8 @@ class TeamProfileScreen extends StatelessWidget {
 
     if (team == null) {
       return Scaffold(
-        appBar: AppBar(title: Text('Team Profile')),
-        body: Center(child: Text('Team not found')),
+        appBar: AppBar(title: const Text('Team Profile')),
+        body: const Center(child: Text('Team not found')),
       );
     }
 
