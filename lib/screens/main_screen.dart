@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tekkers/screens/transfers_screen.dart';
 import 'home_screen.dart';
 import 'news_screen.dart';
 import 'settings_screen.dart';
@@ -17,7 +16,6 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = [
      const HomeScreen(),
     const NewsScreen(),
-    const TransferScreen(),
     const SettingsScreen(),
   ];
 
@@ -46,10 +44,6 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.article),
             label: 'News',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.transfer_within_a_station),
-            label: 'Transfers',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),

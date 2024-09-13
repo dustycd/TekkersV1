@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:permission_handler/permission_handler.dart';  // Import permission handler
+import 'package:permission_handler/permission_handler.dart';
 import 'dart:io' show Platform;
-
-import 'package:tekkers/screens/live_activities_screen.dart';
 import 'package:tekkers/screens/themes_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -26,19 +24,6 @@ class SettingsScreen extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => const PushNotificationsScreen(),
-                ),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.access_time),
-            title: const Text('Live Activities'),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const LiveActivitiesScreen(),
                 ),
               );
             },

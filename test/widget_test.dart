@@ -5,7 +5,6 @@ import 'package:tekkers/screens/home_screen.dart';
 import 'package:tekkers/providers/team_provider.dart';
 import 'package:tekkers/screens/news_screen.dart'; 
 import 'package:tekkers/screens/settings_screen.dart'; 
-import 'package:tekkers/screens/transfers_screen.dart';
 
 void main() {
   // Helper function to wrap the widget under test with the required providers.
@@ -23,7 +22,7 @@ void main() {
 
   testWidgets('App renders HomeScreen with BottomNavigationBar', (WidgetTester tester) async {
     // Arrange
-    await tester.pumpWidget(createTestableWidget(HomeScreen()));
+    await tester.pumpWidget(createTestableWidget(const HomeScreen()));
 
     // Act
     await tester.pumpAndSettle();
@@ -39,16 +38,12 @@ void main() {
 
   testWidgets('Tapping on BottomNavigationBar switches screens', (WidgetTester tester) async {
     // Arrange
-    await tester.pumpWidget(createTestableWidget(HomeScreen()));
+    await tester.pumpWidget(createTestableWidget(const HomeScreen()));
 
     // Act & Assert
     await tester.tap(find.text('News'));
     await tester.pumpAndSettle();
     expect(find.byType(NewsScreen), findsOneWidget); // Check for NewsScreen
-
-    await tester.tap(find.text('Transfers'));
-    await tester.pumpAndSettle();
-    expect(find.byType(TransferScreen), findsOneWidget); // Check for TransfersScreen
 
     await tester.tap(find.text('Settings'));
     await tester.pumpAndSettle();
@@ -61,7 +56,7 @@ void main() {
 
   testWidgets('NewsScreen shows loading indicator while fetching news', (WidgetTester tester) async {
     // Arrange
-    await tester.pumpWidget(createTestableWidget(NewsScreen()));
+    await tester.pumpWidget(createTestableWidget(const NewsScreen()));
 
     // Act
     await tester.pump(); // Let the loading state be active for a moment
@@ -72,7 +67,7 @@ void main() {
 
   testWidgets('NewsScreen displays list of news articles after loading', (WidgetTester tester) async {
     // Arrange
-    await tester.pumpWidget(createTestableWidget(NewsScreen()));
+    await tester.pumpWidget(createTestableWidget(const NewsScreen()));
 
     // Act
     await tester.pumpAndSettle(); // Wait for the loading and news data
@@ -83,7 +78,7 @@ void main() {
 
   testWidgets('NewsScreen search functionality works', (WidgetTester tester) async {
     // Arrange
-    await tester.pumpWidget(createTestableWidget(NewsScreen()));
+    await tester.pumpWidget(createTestableWidget(const NewsScreen()));
 
     // Act
     await tester.enterText(find.byType(TextField), 'Premier League');
@@ -105,7 +100,7 @@ void main() {
         providers: [
           ChangeNotifierProvider(create: (_) => teamProvider),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           home: HomeScreen(),
         ),
       ),
@@ -128,7 +123,7 @@ void main() {
         providers: [
           ChangeNotifierProvider(create: (_) => teamProvider),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           home: HomeScreen(),
         ),
       ),
