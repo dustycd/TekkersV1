@@ -20,11 +20,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 Future<void> main() async {
-  WidgetsFlutterBinding
-      .ensureInitialized(); // Ensure Flutter bindings are initialized
+  WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter bindings are initialized
   await dotenv.load(fileName: ".env"); // Load environment variables
   await Firebase.initializeApp(); // Initialize Firebase
-
+  print('Firebase Initialized');
   // Set up background message handler before running the app
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
