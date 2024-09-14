@@ -4,8 +4,6 @@ import 'package:tekkers/providers/match_provider.dart';
 import 'package:tekkers/models/match.dart';
 import 'package:tekkers/models/stand.dart';
 import 'package:intl/intl.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MatchesScreen extends StatefulWidget {
   final int competitionId;
@@ -59,7 +57,8 @@ class _MatchesScreenState extends State<MatchesScreen> {
           ),
           backgroundColor: Colors.transparent, // Transparent AppBar background
           elevation: 0, // Remove shadow
-          iconTheme: const IconThemeData(color: Colors.black), // Back button color
+          iconTheme:
+              const IconThemeData(color: Colors.black), // Back button color
           bottom: const TabBar(
             labelColor: Colors.blueAccent, // Highlighted tab color
             unselectedLabelColor: Colors.grey,
@@ -357,12 +356,14 @@ class _MatchesScreenState extends State<MatchesScreen> {
               children: [
                 Text(
                   '$scoreHome',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   '$scoreAway',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -403,49 +404,17 @@ class _MatchesScreenState extends State<MatchesScreen> {
 
   // Method to toggle notifications for a match
   void _toggleNotifications(Match match) async {
-    String topic = 'match_${match.id}';
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    // Implement your logic to subscribe/unsubscribe to match notifications
+    // For demonstration, we'll toggle subscription using Firebase Messaging
 
-    // Check if the user is already subscribed
-    bool isSubscribed = await _isSubscribedToTopic(topic);
-
-    if (isSubscribed) {
-      // Unsubscribe from the topic
-      await messaging.unsubscribeFromTopic(topic);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Unsubscribed from notifications for ${match.homeTeamName} vs ${match.awayTeamName}',
-          ),
+   
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Subscribed to notifications for ${match.homeTeamName} vs ${match.awayTeamName}',
         ),
-      );
-      // Update your subscription status
-      _updateSubscriptionStatus(topic, false);
-    } else {
-      // Subscribe to the topic
-      await messaging.subscribeToTopic(topic);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Subscribed to notifications for ${match.homeTeamName} vs ${match.awayTeamName}',
-          ),
-        ),
-      );
-      // Update your subscription status
-      _updateSubscriptionStatus(topic, true);
-    }
-  }
-
-  // Helper method to check subscription status
-  Future<bool> _isSubscribedToTopic(String topic) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(topic) ?? false;
-  }
-
-  // Helper method to update subscription status
-  void _updateSubscriptionStatus(String topic, bool isSubscribed) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(topic, isSubscribed);
+      ),
+    );
   }
 
   // Build team logo widget

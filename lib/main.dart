@@ -1,33 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'providers/competition_provider.dart';
-import 'providers/theme_manager.dart';
+import 'package:tekkers/Providers/competition_provider.dart';
+import 'package:tekkers/Providers/theme_manager.dart';
+import 'package:tekkers/screens/splash_screen.dart'; // Import the SplashScreen
 import 'providers/team_provider.dart';
 import 'providers/match_provider.dart';
 import 'providers/player_provider.dart';
 import 'providers/news_provider.dart';
-import 'screens/splash_screen.dart';
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // Initialize Firebase in the background
-  await Firebase.initializeApp();
-  // Handle the background message
-  print('Handling background message: ${message.messageId}');
-  // You can perform actions like updating local storage or showing notifications
-}
-
-Future<void> main() async {
-  WidgetsFlutterBinding
-      .ensureInitialized(); // Ensure Flutter bindings are initialized
-  await dotenv.load(fileName: ".env"); // Load environment variables
-  await Firebase.initializeApp(); // Initialize Firebase
-
-  // Set up background message handler before running the app
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
+void main() {
   runApp(
     MultiProvider(
       providers: [

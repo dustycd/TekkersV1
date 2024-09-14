@@ -31,11 +31,7 @@ target 'Runner' do
   use_modular_headers!
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-
-  # Add the Firebase pods
-  pod 'Firebase/Core'
-  pod 'Firebase/Messaging'
-
+  
   target 'RunnerTests' do
     inherit! :search_paths
   end
