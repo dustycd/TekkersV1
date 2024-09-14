@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 # Uncomment this line to define a global platform for your project
 platform :ios, '14.0'
+=======
+platform :ios, '12.0' # Ensure the platform is set to iOS 12.0 or higher
+>>>>>>> NewBranch
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -32,6 +36,7 @@ target 'Runner' do
   use_modular_headers!
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+<<<<<<< HEAD
 
   # Add Firebase pods
   pod 'Firebase/Core'
@@ -40,6 +45,9 @@ target 'Runner' do
   pod 'Firebase/Firestore'
   pod 'Firebase/Analytics'
 
+=======
+  
+>>>>>>> NewBranch
   target 'RunnerTests' do
     inherit! :search_paths
   end
@@ -48,7 +56,11 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+<<<<<<< HEAD
     # Exclude arm64 architecture for simulator to avoid build issues
+=======
+    # Workaround for Xcode 12.5 and newer to fix a potential issue with duplicated output files
+>>>>>>> NewBranch
     target.build_configurations.each do |config|
       config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
     end
